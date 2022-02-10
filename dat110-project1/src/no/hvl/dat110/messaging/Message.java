@@ -5,19 +5,18 @@ import no.hvl.dat110.TODO;
 public class Message {
 
 	private byte[] data;
-
+	/*
+	 * @param byte[] data
+	 */
+	
 	public Message(byte[] data) {
 		
-		// TODO - START
+		if (data != null && data.length < MessageConfig.SEGMENTSIZE) {
+			this.data = data;
+		}
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.constructor("Message"));
-		
-		
-		// hei hei hie
-			
-		// TODO - END
 	}
+	
 
 	public byte[] getData() {
 		return this.data; 

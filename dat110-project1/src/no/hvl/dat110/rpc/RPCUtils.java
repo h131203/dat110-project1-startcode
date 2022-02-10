@@ -2,6 +2,8 @@ package no.hvl.dat110.rpc;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Iterator;
+
 import no.hvl.dat110.TODO;
 
 public class RPCUtils {
@@ -14,8 +16,20 @@ public class RPCUtils {
 		
 		// Encapsulate the rpcid and payload in a byte array according to the  RPC message syntax
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		/*
+		 * payload+1 fordi rpcID (som viser hvilken metoden som skal kjøres) tar første plass i tabellen
+		 * setter plass [0] i byte-arrayen til å være den ID som kommer inn
+		 * Deretter flyttes data fra paylod sin første plass og over til rpcmsg[]-arrayen fra plass nr 1 (dvs plassen etter rpc IDen)
+		 * @return rpcmsg, som er en byte[] array
+		 */
+		
+		rpcmsg = new byte[payload.length+1];
+		
+		rpcmsg[0] = rpcid;
+		
+		for (int i=0; i <payload.length; i++) {
+			rpcmsg[i+1] = payload[i];
+		}
 		
 		// TODO - END
 		
@@ -30,8 +44,18 @@ public class RPCUtils {
 		
 		// Decapsulate the rpcid and payload in a byte array according to the  RPC message syntax
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		
+		/*
+		 * payload.length-1= dette fordi første plass indikerer hvilken metode det er, så den trenger vi ikke nå.
+		 * Den er ikke en del av selve payloaden.
+		 * 
+		 * I løkken starter vi på plass plass nr 2(altså 1) i rpcmsg, da plass 0/1 er rpcID / metodenummeret
+		 */
+		payload = new byte[rpcmsg.length-1];
+		
+		for (int i=0; i<payload.length; i++) {
+			payload[i] = rpcmsg[i+1];
+		}
 		
 		// TODO - END
 		
@@ -41,12 +65,28 @@ public class RPCUtils {
 	
 	public static byte[] marshallString(String str) {
 		
+		/*
+		 * VIKTIG I MARSHALLING: få input-dataen omgjort til bytes, på et vis. 
+		 */
+		
 		byte[] encoded = null;
 		
 		// TODO - START 
+		/*
+		 * +1 i length for å lage plass til [0] der metoden sin id (RPCID) skal stå?
+		 * 
+		 * getBytes() metoden - VIKTIG 
+		 * 	metoden over gir ut stringen som en sekvens av bytes, lagre i en  ny byte-tabell. Det er lengden på den tabellen vi bruker +1
+		 * Deretter settes det sekvens av bytes inn i encoded-tabellen, fra plass 1 (etter RPCid)
+		 */
+
+		encoded = new byte[str.getBytes().length];
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+			
+		for (int i=0; i<str.getBytes().length; i++) {
+			encoded[i] = str.getBytes()[i];
+		}
+
 		
 		// TODO - END
 		
@@ -59,8 +99,13 @@ public class RPCUtils {
 		
 		// TODO - START 
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		/*
+		 * Stringen under lages fra en dekoding av byte-arrayen som sendes med. Den starter på plass 1, dvs første plass etter RPCic (metode-Id)
+		 */
+		
+		
+		decoded = new String(data,0,data.length);
+		
 		
 		// TODO - END
 		
@@ -73,8 +118,9 @@ public class RPCUtils {
 		
 		// TODO - START 
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		encoded = new byte[0]; 
+		
+		
 				
 		// TODO - END
 		
@@ -86,8 +132,7 @@ public class RPCUtils {
 		
 		// TODO
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		return;
 		
 	}
 	
@@ -116,10 +161,28 @@ public class RPCUtils {
 		byte[] encoded = null;
 		
 		// TODO - START 
+
+		/*
+		 * gange med 4 ? dele på 4?
+		 * Må se litt mer på denne 
+		 * 
+		 * int er 4 bytes
+		 */
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		//encoded = new byte[(x/4)+1];
+		encoded = new byte[5];
+	
 		
+//		for (int i = 0; i < 4; i++) {
+//			encoded[i+1] = (byte) (x >> (i*8));
+//		}
+//		
+		
+		byte[] b = ByteBuffer.allocate(4).putInt(x).array();
+		
+		for(int i = 1; i<encoded.length; i++) {
+			encoded[i] = b[i-1];
+		}
 		// TODO - END
 		
 		return encoded;
@@ -132,8 +195,16 @@ public class RPCUtils {
 		
 		// TODO - START 
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		/*
+		 * int er 4 bytes
+		 * 
+		 * Må se litt mer på denne for å faktisk skjønne den..
+		 */
+		
+//		for (int i=0; i<4; i++) {
+//			decoded += Byte.toUnsignedInt((byte) (data[i+1] << (i*8)));
+//		}
+		decoded = ByteBuffer.wrap(data, 1, 4).getInt();
 		
 		// TODO - END
 		

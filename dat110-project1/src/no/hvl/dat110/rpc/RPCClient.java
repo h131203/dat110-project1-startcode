@@ -3,7 +3,7 @@ package no.hvl.dat110.rpc;
 import no.hvl.dat110.TODO;
 import no.hvl.dat110.messaging.*;
 
-public class RPCClient {
+public class RPCClient { 
 
 	private MessagingClient msgclient;
 	private Connection connection;
@@ -18,8 +18,9 @@ public class RPCClient {
 		// TODO - START
 		// connect using the underlying messaging layer connection
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		// connect()-metoden i msgclient returner en connection, derfor connection = en connection
+		
+		connection = msgclient.connect();
 		
 		// TODO - END
 	}
@@ -29,8 +30,7 @@ public class RPCClient {
 		// TODO - START
 		// disconnect/close the underlying messaging connection
 		
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		connection.close();
 		
 		// TODO - END
 	}
@@ -52,9 +52,20 @@ public class RPCClient {
 		according to the RPC message format
 			
 		*/
-				
-		if (true)
-			throw new UnsupportedOperationException(TODO.method());
+		
+
+		// sender melding over en opprettet connection. Ny melding opprettes, som tar parameter byte[] array (i dette tilfellet har den blitt marshalled)
+		
+		//innkapsle før sendes-- VIKTIG
+		byte[] rpcrequest = RPCUtils.encapsulate(rpcid, params);
+		connection.send(new Message(rpcrequest));
+		
+		//receive() metoden tar i mot RPC replyen, de-kapsler og putter innholdet inn i en message. Via Message-klassens in getData()-metode henter
+		//vi ut innholdet fra melding og stter inn  i byte[] - arrayen returnval.
+		byte[] rpcreply = connection.receive().getData();
+		
+		//UTKAPSLE
+		returnval = RPCUtils.decapsulate(rpcreply);
 		
 		// TODO - END
 		return returnval;
